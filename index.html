@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Evaluación: Diagnóstico y Razonamiento Técnico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fce4ec 0%, #fff3e0 50%, #e0f2f1 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Poppins', system-ui, sans-serif;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quiz-wrapper {
+            max-width: 880px;
+            width: 100%;
+            margin: 0 auto;
+            background: #fffffff0;
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.25);
+            padding: 1.8rem;
+            transition: all 0.2s;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.2rem;
+            border-bottom: 4px solid #ff8c42;
+            padding-bottom: 0.7rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #1e6f9f, #e67e22);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.2px;
+        }
+
+        .sub {
+            color: #e67e22;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+            font-weight: 600;
+        }
+
+        .progress-area {
+            background: #e6e0f0;
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #1a4a6e;
+            font-weight: 700;
+        }
+
+        .question-counter {
+            font-weight: 800;
+            background: #ffcc88;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            color: #5a3a1a;
+        }
+
+        .score-badge {
+            background: #88ccaa;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 700;
+            color: #1a4a2e;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1.3rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border-left: 8px solid #ff8c42;
+            border-right: 1px solid #f0e0d0;
+        }
+
+        .question-text {
+            font-size: 1.08rem;
+            font-weight: 800;
+            color: #2c3e66;
+            margin-bottom: 1.2rem;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            cursor: pointer;
+            padding: 0.6rem 0.8rem;
+            border-radius: 1rem;
+            background: #fefaf5;
+            border: 2px solid #e0d0c0;
+            transition: all 0.15s;
+        }
+
+        .option:hover {
+            background: #fff4e6;
+            border-color: #ffaa66;
+            transform: scale(1.01);
+        }
+
+        input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 2px solid #e67e22;
+            border-radius: 50%;
+            margin-top: 0.1rem;
+            cursor: pointer;
+            background: white;
+            flex-shrink: 0;
+        }
+
+        input[type="radio"]:checked {
+            background-color: #e67e22;
+            border-color: #e67e22;
+            box-shadow: inset 0 0 0 3px white;
+        }
+
+        .option label {
+            flex: 1;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            cursor: pointer;
+            color: #2c3e66;
+            font-weight: 600;
+        }
+
+        .feedback {
+            margin-top: 0.8rem;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            background: #fef7e8;
+            border-left: 5px solid;
+            line-height: 1.4;
+            color: #2c3e50;
+        }
+
+        .feedback.correct {
+            border-left-color: #44aa66;
+            background: #e0ffe8;
+        }
+
+        .feedback.incorrect {
+            border-left-color: #ff6666;
+            background: #ffe6e6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            border: none;
+            background: #ddd0c0;
+            color: #4a3a2a;
+            font-weight: 800;
+            padding: 0.6rem 1.3rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: #3a86ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2a6ad0;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: #e67e22;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #d46a10;
+        }
+
+        .btn-reset {
+            background: #cc6644;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #aa4422;
+        }
+
+        .btn-success {
+            background: #44aa66;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #338855;
+        }
+
+        .results-area {
+            margin-top: 1.5rem;
+            background: #fff2e0;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            border: 2px solid #ffaa33;
+            display: none;
+        }
+
+        .results-area h3 {
+            color: #cc5500;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-summary {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: bold;
+            color: #1f4a2e;
+        }
+
+        .result-detail {
+            max-height: 280px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+        }
+
+        .result-item {
+            padding: 0.4rem;
+            border-bottom: 1px solid #ffd9a0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 1.2rem;
+            color: #aa8855;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-wrapper {
+                padding: 1rem;
+            }
+            .question-text {
+                font-size: 0.98rem;
+            }
+            .option label {
+                font-size: 0.88rem;
+            }
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-wrapper">
+    <div class="header">
+        <h1>🔍 Diagnóstico y Razonamiento Técnico</h1>
+        <div class="sub">Firmware, UEFI, BIOS, controladores, POST y resolución de fallos</div>
+    </div>
+
+    <div class="progress-area">
+        <span class="question-counter" id="questionCounter">Pregunta 1 / 20</span>
+        <span class="score-badge" id="liveScore">✅ Aciertos: 0</span>
+    </div>
+
+    <div id="questionContainer"></div>
+
+    <div class="nav-buttons">
+        <button id="prevBtn" class="btn btn-secondary">◀ Anterior</button>
+        <button id="nextBtn" class="btn btn-primary">Siguiente ▶</button>
+        <button id="resetBtn" class="btn btn-reset">⟳ Reiniciar</button>
+        <button id="finalScoreBtn" class="btn btn-success">📊 Ver total</button>
+    </div>
+
+    <div id="resultsPanel" class="results-area"></div>
+    <footer>📌 Selecciona una opción → retroalimentación inmediata. Al finalizar, revisa tu puntuación.</footer>
+</div>
+
+<script>
+    // ==================== DATOS DEL CUESTIONARIO (20 preguntas) ====================
+    // Respuestas correctas extraídas de las justificaciones del material
+    const questionsData = [
+        { text: "Un servidor con un volumen de almacenamiento de 8 TB no logra arrancar tras una migración de hardware. Se confirma que el disco tiene una tabla de particiones MBR. ¿Cuál es el diagnóstico técnico correcto según la evolución de los estándares?",
+          options: ["El firmware está en modo UEFI nativo, el cual requiere GPT para manejar volúmenes superiores a 2.2 TB.", "El BIOS legacy no reconoce el sistema de archivos NTFS en discos de gran capacidad.", "El Secure Boot está bloqueando el acceso al registro maestro de arranque (MBR) por seguridad.", "El hardware es inerte porque el firmware no puede traducir las señales eléctricas del disco de 8 TB."],
+          correct: "a",
+          explanation: "Correcta (a): El estándar BIOS/MBR tiene límite de 2.2 TB; UEFI y GPT son necesarios para superar esa capacidad."
+        },
+        { text: "Durante el arranque, un sistema emite una serie de 'beeps' físicos y la pantalla permanece en negro. ¿En qué fase de la secuencia de arranque se encuentra el fallo?",
+          options: ["Inicialización UEFI, específicamente en la carga de Secure Boot.", "Boot Manager, ya que no encuentra un dispositivo de arranque válido.", "Encendido & POST, donde la UEFI verifica el hardware básico.", "Capa de Sistema Operativo, debido a un conflicto crítico de drivers."],
+          correct: "c",
+          explanation: "Correcta (c): Los códigos de error por beeps físicos ocurren durante la fase de POST (Power-On Self-Test) al fallar la verificación del hardware."
+        },
+        { text: "Un técnico intenta instalar una distribución de Linux personalizada, pero el sistema rechaza el cargador de arranque (bootloader). ¿Qué ajuste de la UEFI es el responsable probable?",
+          options: ["El perfil XMP/DOCP está forzando voltajes incompatibles con el kernel de Linux.", "Secure Boot está activo y no reconoce la firma digital de la distribución.", "El orden de arranque (Boot Order) prioriza dispositivos NVMe sobre USB.", "La inicialización paralela de la UEFI está causando una condición de carrera en el hardware."],
+          correct: "b",
+          explanation: "Correcta (b): Secure Boot verifica firmas digitales; debe apagarse para instalar ciertos sistemas Linux."
+        },
+        { text: "Al revisar el Administrador de Dispositivos, un componente muestra un icono de flecha hacia abajo. ¿Qué acción técnica se deduce de este estado?",
+          options: ["El dispositivo tiene un conflicto de recursos (IRQ) y debe ser reasignado.", "El controlador está corrupto y requiere una reversión (rollback) inmediata.", "El dispositivo fue deshabilitado manualmente y no consume recursos del sistema.", "El hardware no ha sido detectado por la UEFI y requiere revisión física."],
+          correct: "c",
+          explanation: "Correcta (c): Según la simbología técnica, la flecha hacia abajo indica un dispositivo deshabilitado manualmente que no consume recursos."
+        },
+        { text: "Se presenta un error de inestabilidad en una GPU de alto rendimiento recién instalada. El técnico ya instaló los drivers de la GPU del sitio del fabricante. Según las 'Reglas de Oro', ¿qué paso crítico podría haberse omitido?",
+          options: ["No se activó el Overclocking en la UEFI para dar soporte al voltaje de la GPU.", "No se instalaron los controladores del Chipset antes que los de la GPU.", "Se utilizó Windows Update para instalar drivers genéricos inicialmente.", "No se formateó la unidad USB en FAT32 antes de la instalación de drivers."],
+          correct: "b",
+          explanation: "Correcta (b): Una regla de oro es instalar los controladores del Chipset antes que los de la GPU para asegurar estabilidad."
+        },
+        { text: "Un sistema detecta un 'Dispositivo Desconocido' en el SO, pero el hardware aparece correctamente listado en la configuración de la UEFI. ¿Dónde radica el problema?",
+          options: ["Existe un daño físico en la conexión o suministro de energía del componente.", "El firmware (EEPROM) del dispositivo está corrupto y es 'inerte'.", "El Sistema Operativo carece del traductor (driver) necesario para comunicarse con el hardware.", "La tabla de particiones GPT está impidiendo que el SO asigne un ID de hardware."],
+          correct: "c",
+          explanation: "Correcta (c): Si hardware detectado en UEFI pero no en SO (o como desconocido), el problema es de falta o corrupción de driver."
+        },
+        { text: "Un usuario desea mejorar los tiempos de carga de su sistema mediante perfiles de memoria avanzados. ¿Qué tecnología de la UEFI permite ajustar automáticamente velocidad, latencia y voltaje?",
+          options: ["VCore Adjustment.", "Secure Boot.", "XMP / DOCP.", "Flashing Q-Flash."],
+          correct: "c",
+          explanation: "Correcta (c): XMP (Intel) y DOCP (AMD) son perfiles UEFI que automatizan el ajuste de memorias por encima del estándar JEDEC."
+        },
+        { text: "¿Por qué es crítico no interrumpir el proceso de 'Flashing' de un firmware?",
+          options: ["Porque el Sistema Operativo perdería la firma digital de Secure Boot.", "Porque se podría dejar el hardware en un estado inerte al corromper las instrucciones básicas en la EEPROM/Flash.", "Porque el Administrador de Dispositivos mostraría un Código 43 permanente.", "Porque el orden de arranque se resetearía permanentemente a USB."],
+          correct: "b",
+          explanation: "Correcta (b): El firmware es el 'cerebro' en memoria no volátil; una interrupción puede 'brickear' el hardware."
+        },
+        { text: "Al diagnosticar un 'Triángulo Amarillo' con Código 10 en el Administrador de Dispositivos, ¿cuál es la interpretación técnica correcta?",
+          options: ["El dispositivo está funcionando correctamente pero requiere una versión más reciente.", "Existe un error de instalación o un conflicto que requiere revisión de propiedades.", "El hardware ha sido deshabilitado para ahorrar energía.", "El ID de Hardware (PCI\\VEN...) no existe en la base de datos de Windows Update."],
+          correct: "b",
+          explanation: "Correcta (b): El triángulo amarillo simboliza errores de instalación o conflictos de configuración/recursos."
+        },
+        { text: "En la 'Pirámide de Abstracción', ¿cuál es la función exacta de los Drivers en la Capa Superior?",
+          options: ["Inicializar el hardware y realizar el POST.", "Traducir las llamadas del Sistema Operativo hacia el hardware.", "Gestionar el almacenamiento no volátil en la EEPROM.", "Verificar las firmas digitales de los rootkits."],
+          correct: "b",
+          explanation: "Correcta (b): Los controladores traducen entre el Sistema Operativo y el hardware físico."
+        },
+        { text: "Un técnico nota que el mouse funciona perfectamente en la interfaz de configuración del sistema, pero el teclado solo funciona en modo texto. ¿Qué tipo de firmware está utilizando probablemente?",
+          options: ["BIOS Legacy.", "UEFI Moderno.", "Firmware de bajo nivel de teclado.", "Driver genérico de Windows."],
+          correct: "a",
+          explanation: "Correcta (a): BIOS Legacy solo soporta interfaz de texto con teclado; UEFI moderno permite mouse y gráficos."
+        },
+        { text: "Tras actualizar un driver de video, el sistema presenta pantallas azules (BSOD). ¿Cuál es la herramienta nativa recomendada para revertir este estado sin reinstalar el SO?",
+          options: ["Utilidad Q-Flash de la placa base.", "Opción de 'Reversión' (Rollback) en el Administrador de Dispositivos.", "Deshabilitar el Secure Boot en la UEFI.", "Cambiar el Boot Order a modo Legacy."],
+          correct: "b",
+          explanation: "Correcta (b): El Administrador de Dispositivos guarda la versión anterior del controlador para casos de inestabilidad."
+        },
+        { text: "Un sistema reporta el error 'No bootable device found'. El disco físico es nuevo y está conectado. ¿Qué debe verificar el técnico en la Capa Media?",
+          options: ["La integridad de los drivers en el Administrador de Dispositivos.", "El suministro eléctrico de la GPU.", "El Boot Order y la carga de la configuración en la UEFI.", "Si el teclado está en modo 16 bits real."],
+          correct: "c",
+          explanation: "Correcta (c): El error ocurre en la fase de Boot Manager cuando la UEFI no encuentra un dispositivo de arranque válido en la prioridad configurada."
+        },
+        { text: "¿Qué ventaja técnica ofrece la arquitectura de 32 o 64 bits de UEFI sobre los 16 bits de BIOS durante el encendido?",
+          options: ["Permite el uso de memorias EEPROM de mayor capacidad.", "Habilita la inicialización paralela del hardware, acelerando el arranque.", "Elimina la necesidad de drivers en el Sistema Operativo.", "Garantiza que todos los dispositivos tengan un triángulo amarillo de advertencia."],
+          correct: "b",
+          explanation: "Correcta (b): UEFI permite inicialización paralela de componentes, optimizando el tiempo de arranque."
+        },
+        { text: "Se requiere actualizar el firmware para dar soporte a una nueva CPU. Según el protocolo de 'Flashing', ¿cuál es el requisito de formato para la unidad USB?",
+          options: ["NTFS para soportar archivos de gran tamaño.", "ExFAT para compatibilidad multiplataforma.", "FAT32, utilizando la utilidad integrada en la placa base.", "El USB debe estar vacío y sin particiones (unallocated)."],
+          correct: "c",
+          explanation: "Correcta (c): El protocolo exige formatear la unidad USB en FAT32 para ser leída por utilidades de la placa base como Q-Flash."
+        },
+        { text: "¿Cuál es la principal diferencia de almacenamiento entre el firmware y los drivers?",
+          options: ["El firmware reside en memoria no volátil (Flash/EEPROM) y el driver es software en el SO.", "El driver es hardware físico y el firmware es solo código temporal.", "El firmware se descarga de Windows Update y los drivers de la ROM.", "No hay diferencia; ambos se almacenan en el registro maestro de arranque (MBR)."],
+          correct: "a",
+          explanation: "Correcta (a): Firmware en memoria no volátil acoplada al hardware; drivers son software en capa del SO."
+        },
+        { text: "Un dispositivo presenta un 'Conflicto de recursos (IRQ)'. ¿En qué nivel de diagnóstico se encuentra este problema según la guía técnica?",
+          options: ["Problema físico de conexión.", "Falta de controlador en el SO.", "Controlador instalado, pero el dispositivo falla por incompatibilidad o conflicto.", "El dispositivo está deshabilitado manualmente."],
+          correct: "c",
+          explanation: "Correcta (c): Cuando el controlador está presente pero falla, puede deberse a conflictos de recursos como IRQ o incompatibilidad."
+        },
+        { text: "¿Qué riesgo de seguridad mitiga directamente el uso de Secure Boot?",
+          options: ["El desgaste prematuro de la memoria Flash.", "El acceso no autorizado a la interfaz gráfica de la UEFI.", "La ejecución de rootkits y malware durante el proceso de arranque.", "El sobrecalentamiento de la CPU durante el overclocking."],
+          correct: "c",
+          explanation: "Correcta (c): Secure Boot bloquea malware como rootkits verificando firmas digitales en el arranque."
+        },
+        { text: "Un técnico observa que un sistema funciona bien para tareas básicas, pero tiene bajo rendimiento en juegos y aplicaciones NVMe. ¿Qué acción de mantenimiento es prioritaria?",
+          options: ["Cambiar el teclado a un modelo mecánico.", "Instalar controladores optimizados del sitio del fabricante (GPU, Chipsets, NVMe).", "Activar el modo Legacy en la BIOS para mejorar la compatibilidad.", "Reinstalar el SO para limpiar el Administrador de Dispositivos."],
+          correct: "b",
+          explanation: "Correcta (b): Los drivers genéricos de Windows Update son básicos; para rendimiento máximo se requieren los del fabricante."
+        },
+        { text: "Si el hardware NO es detectado en la UEFI, ¿qué debe descartar el técnico antes de pasar a la capa de software?",
+          options: ["La versión del driver de la GPU.", "La configuración de la tabla GPT.", "Problemas físicos como conexiones, energía o daños de hardware.", "El estado del icono en el Administrador de Dispositivos."],
+          correct: "c",
+          explanation: "Correcta (c): Si hardware no aparece en UEFI, la causa es física (conexión o daño), no de software/drivers."
+        }
+    ];
+
+    let userAnswers = new Array(20).fill(null);
+    let currentIndex = 0;
+
+    const questionContainer = document.getElementById('questionContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const finalScoreBtn = document.getElementById('finalScoreBtn');
+    const questionCounterSpan = document.getElementById('questionCounter');
+    const liveScoreSpan = document.getElementById('liveScore');
+    const resultsPanel = document.getElementById('resultsPanel');
+
+    function updateLiveScore() {
+        let correctCount = 0;
+        for (let i = 0; i < userAnswers.length; i++) {
+            if (userAnswers[i] && userAnswers[i] === questionsData[i].correct) correctCount++;
+        }
+        liveScoreSpan.textContent = `✅ Aciertos: ${correctCount} / 20`;
+        return correctCount;
+    }
+
+    function saveAnswer(selectedLetter) {
+        userAnswers[currentIndex] = selectedLetter;
+        updateLiveScore();
+        renderCurrentQuestion();
+    }
+
+    function renderCurrentQuestion() {
+        const q = questionsData[currentIndex];
+        const selected = userAnswers[currentIndex];
+        const letters = ['a', 'b', 'c', 'd'];
+        let optionsHtml = '';
+        q.options.forEach((opt, idx) => {
+            const letter = letters[idx];
+            const isChecked = (selected === letter);
+            optionsHtml += `
+                <div class="option" data-letter="${letter}">
+                    <input type="radio" name="question" value="${letter}" id="opt_${letter}" ${isChecked ? 'checked' : ''}>
+                    <label for="opt_${letter}"><strong>${letter.toUpperCase()})</strong> ${opt}</label>
+                </div>
+            `;
+        });
+
+        let feedbackHtml = '';
+        if (selected) {
+            const isCorrect = (selected === q.correct);
+            const correctLetter = q.correct;
+            const correctText = q.options[letters.indexOf(correctLetter)];
+            const explanation = q.explanation;
+            if (isCorrect) {
+                feedbackHtml = `<div class="feedback correct">✅ <strong>¡Correcto!</strong> ${explanation}</div>`;
+            } else {
+                feedbackHtml = `<div class="feedback incorrect">❌ <strong>Incorrecto.</strong> La respuesta correcta es ${correctLetter.toUpperCase()}) ${correctText}.<br>${explanation}</div>`;
+            }
+        } else {
+            feedbackHtml = `<div class="feedback" style="border-left-color:#ffcc88; background:#fff5e6;">⚡ Selecciona una opción para ver la retroalimentación.</div>`;
+        }
+
+        const html = `
+            <div class="question-card">
+                <div class="question-text">${q.text}</div>
+                <div class="options" id="optionsContainer">
+                    ${optionsHtml}
+                </div>
+                ${feedbackHtml}
+            </div>
+        `;
+        questionContainer.innerHTML = html;
+
+        // Event listeners
+        const optionDivs = document.querySelectorAll('.option');
+        optionDivs.forEach(div => {
+            const radio = div.querySelector('input[type="radio"]');
+            const letter = div.getAttribute('data-letter');
+            if (radio) {
+                radio.addEventListener('change', () => {
+                    if (radio.checked) saveAnswer(letter);
+                });
+            }
+            div.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'INPUT') {
+                    const radioInside = div.querySelector('input');
+                    if (radioInside && !radioInside.checked) {
+                        radioInside.checked = true;
+                        saveAnswer(letter);
+                    }
+                }
+            });
+        });
+
+        questionCounterSpan.textContent = `Pregunta ${currentIndex+1} / 20`;
+    }
+
+    function showFinalResults() {
+        let correctCount = 0;
+        let detailsHtml = '';
+        for (let i = 0; i < questionsData.length; i++) {
+            const q = questionsData[i];
+            const userAns = userAnswers[i];
+            const isCorrect = (userAns === q.correct);
+            if (isCorrect) correctCount++;
+            const statusIcon = isCorrect ? '✅' : '❌';
+            const userShow = userAns ? userAns.toUpperCase() : '—';
+            const correctShow = q.correct.toUpperCase();
+            detailsHtml += `
+                <div class="result-item">
+                    <span style="min-width: 30px;">${statusIcon}</span>
+                    <span><strong>Pregunta ${i+1}</strong> (Tu respuesta: ${userShow} / Correcta: ${correctShow})</span>
+                </div>
+            `;
+        }
+        const percent = Math.round((correctCount / 20) * 100);
+        resultsPanel.innerHTML = `
+            <h3>📊 Resultado final</h3>
+            <div class="result-summary">🎯 Aciertos: ${correctCount} de 20 (${percent}%)</div>
+            <div class="result-detail">${detailsHtml}</div>
+            <button id="closeResultsBtn" class="btn btn-secondary" style="margin-top: 10px; width:100%;">✖ Cerrar resumen</button>
+        `;
+        resultsPanel.style.display = 'block';
+        document.getElementById('closeResultsBtn')?.addEventListener('click', () => {
+            resultsPanel.style.display = 'none';
+        });
+        alert(`📊 Cuestionario completado.\nAciertos: ${correctCount} de 20 (${percent}%)\nRevisa el resumen detallado en pantalla.`);
+    }
+
+    function nextQuestion() {
+        if (currentIndex < 19) {
+            currentIndex++;
+            renderCurrentQuestion();
+        } else {
+            const unanswered = userAnswers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if (confirm(`Aún tienes ${unanswered} pregunta(s) sin responder. ¿Deseas finalizar de todas formas? Las no respondidas se contarán como incorrectas.`)) {
+                    showFinalResults();
+                }
+            } else {
+                showFinalResults();
+            }
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderCurrentQuestion();
+        } else {
+            alert("Ya estás en la primera pregunta.");
+        }
+    }
+
+    function resetQuiz() {
+        if (confirm("¿Reiniciar todo el cuestionario? Se perderán todas las respuestas.")) {
+            userAnswers = new Array(20).fill(null);
+            currentIndex = 0;
+            resultsPanel.style.display = 'none';
+            updateLiveScore();
+            renderCurrentQuestion();
+        }
+    }
+
+    prevBtn.addEventListener('click', prevQuestion);
+    nextBtn.addEventListener('click', nextQuestion);
+    resetBtn.addEventListener('click', resetQuiz);
+    finalScoreBtn.addEventListener('click', showFinalResults);
+
+    renderCurrentQuestion();
+    updateLiveScore();
+</script>
+</body>
+</html>
